@@ -15,7 +15,7 @@ provider "openstack" {
 
   resource "openstack_compute_instance_v2" "exec" {
 
-    name            = "exec-${count.index}"
+    name            = "${var.VM_name}-${count.index}"
     image_name        = var.image_name
     flavor_name       = var.flavor_name
     key_pair        = var.key_pair

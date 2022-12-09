@@ -1,2 +1,5 @@
 beth-scratch.rc
 .ssh/
+.terraform.lock.hcl
+.terraform/providers/
+terraform.tfstate
