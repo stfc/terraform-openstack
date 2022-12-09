@@ -3,3 +3,4 @@ beth-scratch.rc
 .terraform.lock.hcl
 .terraform/providers/
 terraform.tfstate
+terraform.tfstate.backup
