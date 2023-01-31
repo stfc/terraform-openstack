@@ -1,0 +1,7 @@
+roles:
+  - name: lablabs.rke2
+
+collections:
+  # K8s deps
+  - name: kubernetes.core
+  - name: community.kubernetes

@@ -4,3 +4,7 @@ beth-scratch.rc
 .terraform/providers/
 terraform.tfstate
 terraform.tfstate.backup
+kubeconfig
+.terraform*
+inventory.ini
+haproxy.cfg

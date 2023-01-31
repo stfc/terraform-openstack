@@ -1,0 +1,12 @@
+- name: Deploy RKE2 and load balancerSetup the nodes with their pre-RKE deployment requirements
+  hosts: all
+
+  roles:
+    - role: load-balancer
+
+
+- name: Deploy RKE2
+  hosts: node
+  become: yes
+  roles:
+     - role: lablabs.rke2
