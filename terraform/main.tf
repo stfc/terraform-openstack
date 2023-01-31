@@ -1,5 +1,5 @@
 variable "fedID" {
-    default = "wep23441"
+    default = ""
 } 
 
 variable "image" {
@@ -213,51 +213,6 @@ resource "openstack_compute_instance_v2" "rke-load-balancer" {
 ######################################################################################################
 # output
 ######################################################################################################
-
-# locals {
-#     rke_tmpl = {
-#         apiVersion = "rkectl.rkeproject.io/v1beta1"
-#         kind = "cluster"
-#         metadata = {
-#             name = "rke-cluster"
-#         }
-#         spec = {
-#             hosts = [
-#                 for host in concat(openstack_compute_instance_v2.rke-controllers, openstack_compute_instance_v2.rke-workers) : {
-#                     ssh = {
-#                         address = host.access_ip_v4
-#                         uservar.key_pair_name                         port = 22
-#                     }
-#                     role = "${length(regexall("controller", host.name)) > 0 ? "controller" : "worker" }"
-#                 }
-#             ]
-#             rke = {
-#                 version = "1.24.7+rke.0"
-#                 dynamicConfig = false
-#                 config = {
-#                     apiVersion = "rke.rkeproject.io/v1beta1"
-#                     kind = "cluster"
-#                     metadata = {
-#                         name = "rke"
-#                     }
-#                     spec = {
-#                         api = {
-#                             externalAddress = openstack_compute_instance_v2.rke-load-balancer.access_ip_v4
-#                             sans = openstack_compute_instance_v2.rke-load-balancer.access_ip_v4
-#                         }
-#                         network = {
-#                             provider = "custom"
-#                         }
-#                     }
-#                 }
-#             }
-#         }
-#     }
-# }
-
-# output "rke_cluster" {
-#   value = yamlencode(local.rke_tmpl)
-# }
 
 output "ansible_inventory" {
   value = templatefile(
