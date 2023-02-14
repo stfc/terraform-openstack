@@ -1,5 +1,5 @@
 variable "fedID" {
-    default = ""
+    default = "${}"
 } 
 
 variable "image" {
@@ -16,15 +16,15 @@ variable "worker_flavour" {
 }
 
 variable "master_count" {
-    default = 3 # Need to update to load balancer definitions below when this changes to include the extra ips as they are not dynamic
+    default = 5 
 }
 
 variable "worker_count" {
-    default = 1
+    default = 4
 }
 
 variable "security_groups" {
-    default = ["rke-secgroup"] # later we want to set to  default = ["rke-secgroup", "your-own-secgroup"]
+    default = ["rke-secgroup"] 
 }
 
 variable "key_pair_name" {

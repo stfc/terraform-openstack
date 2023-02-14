@@ -8,3 +8,4 @@ kubeconfig
 .terraform*
 inventory.ini
 haproxy.cfg
+rke2.yaml

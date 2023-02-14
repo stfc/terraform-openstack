@@ -16,7 +16,7 @@ resource "openstack_compute_instance_v2" "rke-masters" {
   image_name = var.image
   flavor_name = var.master_flavour
   key_pair = var.key_pair_name
-  security_groups = [openstack_compute_secgroup_v2.rke-secgroup.name] # var.security_groups TODO
+  security_groups = [openstack_compute_secgroup_v2.rke-secgroup.name] 
   count = var.master_count
 
   network {
@@ -29,13 +29,26 @@ resource "openstack_compute_instance_v2" "rke-workers" {
   image_name = var.image
   flavor_name = var.worker_flavour
   key_pair = var.key_pair_name
-  security_groups = [openstack_compute_secgroup_v2.rke-secgroup.name] # var.security_groups TODO
+  security_groups = [openstack_compute_secgroup_v2.rke-secgroup.name]
   count = var.worker_count
 
   network {
     name = "Internal"
   } 
 }
+
+# resource "openstack_compute_instance_v2" "rke-load-balancer" {
+#   name = "rke-load-balancer"
+#   image_name = var.image
+#   flavor_name = var.master_flavour
+#   key_pair = var.key_pair_name
+#   security_groups = [openstack_compute_secgroup_v2.rke-secgroup.name]
+#   count = var.worker_count
+
+#   network {
+#     name = "Internal"
+#   } 
+# }
 
 ######################################################################################################
 # output
@@ -45,7 +58,7 @@ output "ansible_inventory" {
   value = templatefile(
     "${path.module}/templates/ansible-inventory.tftpl",
     {
-        user = var.fedID,       
+        user = "${var.OS_USERNAME}",       
         masters = openstack_compute_instance_v2.rke-masters.*.access_ip_v4,
         workers = openstack_compute_instance_v2.rke-workers.*.access_ip_v4
     }

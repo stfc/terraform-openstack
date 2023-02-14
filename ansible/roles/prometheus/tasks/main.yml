@@ -37,8 +37,8 @@
             remoteWrite:
               - url: https://prometheus-prod-01-eu-west-0.grafana.net/api/prom/push
                 basic_auth:
-                  username: "{{ grafana_cloud_prometheus.username }}"
-                  password: "{{ grafana_cloud_prometheus.token }}"
+                  username: ""  #"{{ grafana_cloud_prometheus.username }}"
+                  password: "" #"{{ grafana_cloud_prometheus.token }}"
                 write_relabel_configs:
                   - source_labels:
                       - __name__

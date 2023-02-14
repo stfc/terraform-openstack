@@ -4,4 +4,5 @@ roles:
 collections:
   # K8s deps
   - name: kubernetes.core
+    # version: 1.24.0
   - name: community.kubernetes
