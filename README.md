@@ -21,7 +21,7 @@ Find the latest release and copy the link to the binary from here https://github
 ```shell
 wget [BINARY_LINK]
 chmod +x rke_linux-amd64
-mv rke_linux-amd64 /usr/local/bin/rke # or any other $PATH) 
+mv rke_linux-amd64 /usr/local/bin/rke # or any other $PATH 
 rke --version # Check that RKE is working
 ```
 
@@ -36,7 +36,7 @@ Conda is needed for managing the k8s repo or install python-kubernetes, ansible,
 
 ```shell
 wget https://repo.anaconda.com/archive/Anaconda3-2022.10-Linux-x86_64.sh
-bash Anaconda3-2022.10-Linux-x86_64.sh # need to answer yes
+bash Anaconda3-2022.10-Linux-x86_64.sh 
 source anaconda3/bin/activate
 conda init
 ```
@@ -49,7 +49,7 @@ May need to close the ssh session and log in again
 To create a conda environment that can sustain development of this repository you can run the following command, whilst in the repository:
 
 ```shell
-cd k8s/
+cd terraform-openstack/
 conda env create -f k8s-conda-env.yml
 conda activate k8s
 helm plugin install https://github.com/databus23/helm-diff  # recommended helm plugin
@@ -59,13 +59,13 @@ helm plugin install https://github.com/databus23/helm-diff  # recommended helm p
 ### Cloud setup and RKE deployment in terraform:
 
 - Go to `terraform/variables.tf` file, modify variables to your liking i.e. image, flavours, number of VMs, your fedID.
-- Within `terraform/main.tf` file, you may need to set your  SSH Key name ONLY IF you don't have your ssh-keys in the cloud already.
 
 
 ### You are ready to run Terraform!
 
 ```shell
 terraform init
+terraform plan # check that settings are correct 
 terraform apply
 ``` 
 Last command struggles with creating all the openstack VMs, this happens when doing it manually and is not related to terraform, it is due to cloud instability.
@@ -86,16 +86,23 @@ Use terraform to output the ansible inventory into your ansible directory
 terraform output -raw ansible_inventory > ../ansible/inventory.ini
 ```
 
+### Install required ansible roles and kubectl
 
+```shell
+ansible-galaxy install lablabs.rke2
+sudo snap install kubectl --classic
+```
 ### Set up nodes
 Use terraform to set up nodes for RKE deployment. You will need to run these repeatedly until they execute with no errors. 
 
 ```shell
-cd ../ansible/playbooks; ansible-playbook setup-nodes.yml; cd ../terraform
+cd ../ansible; ansible-playbook setup-nodes.yml; cd ../terraform
 ```
 
 ### Acess your cluster
 To acess your cluster with kubectl you will need to get `rke2.yaml` from controlplane. Export KUBECONFIG as an environment variable so that ansible can pick it up.
+
+** NB! Prior to running `kubectl`, you may need to modify the `server:` line to include one of master's IP address instead of `https://127.0.0.1:6443` **
 
 ```shell
 export KUBECONFIG=/etc/rancher/rke2/rke2.yaml

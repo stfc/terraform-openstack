@@ -36,7 +36,7 @@ output "ansible_inventory" {
   value = templatefile(
     "${path.module}/templates/ansible-inventory.tftpl",
     {
-        user = "${var.OS_USERNAME}",       
+        user = var.fedID,       
         masters = openstack_compute_instance_v2.rke-masters.*.access_ip_v4,
         workers = openstack_compute_instance_v2.rke-workers.*.access_ip_v4
     }

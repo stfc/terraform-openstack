@@ -1,5 +1,5 @@
 variable "fedID" {
-    default = "${}"
+    default = "your-own-fed-id"
 } 
 
 variable "image" {
