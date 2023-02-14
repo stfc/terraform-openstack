@@ -16,11 +16,11 @@ variable "worker_flavour" {
 }
 
 variable "master_count" {
-    default = 5 
+    default = 3 
 }
 
 variable "worker_count" {
-    default = 4
+    default = 1
 }
 
 variable "security_groups" {
@@ -28,5 +28,5 @@ variable "security_groups" {
 }
 
 variable "key_pair_name" {
-    default = "minimal-key"
+    default = "your-keypair-name"
 }

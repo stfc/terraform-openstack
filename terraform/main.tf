@@ -1,13 +1,4 @@
 ######################################################################################################
-# SSH Keys
-######################################################################################################
-
-# resource "openstack_compute_keypair_v2" "keypair" {
-#   name = "vxw59196" # Use fedID 
-#   public_key = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDE973x4riglYeO/8QRF2Pbr0rb7W4Q40apqJf1UUnBnKZ04wPmPq9R+20JDt/YpX4i+Nfxv8peFu6+wqrdHLbNWTnQoUq+jWGass5MzadWhaW8Bc8BRuMgCx3dBxLnHKAH9Lrr9PKhY99w2573B8sb5SdJKDJQMCqjpVlQKtgOaJEHZ3iE9eBKDj0z+FveIpA/huLFPXeLmYc3u/DpGgkc59x5xnLPuh4Va0IJ+9DEsru5NYFLVACVW8QsNozWYONs/2xUjO4uL1Ue5wfFoRWU87lgJ8YZNXj1aszrJD4i51cD8Zar1dbHc2CHMDF0oyJBpXd6IfN4F5R4MUVizmtD samuel.jones@stfc.ac.uk"
-# }
-
-######################################################################################################
 # Nodes
 ######################################################################################################
 
@@ -36,19 +27,6 @@ resource "openstack_compute_instance_v2" "rke-workers" {
     name = "Internal"
   } 
 }
-
-# resource "openstack_compute_instance_v2" "rke-load-balancer" {
-#   name = "rke-load-balancer"
-#   image_name = var.image
-#   flavor_name = var.master_flavour
-#   key_pair = var.key_pair_name
-#   security_groups = [openstack_compute_secgroup_v2.rke-secgroup.name]
-#   count = var.worker_count
-
-#   network {
-#     name = "Internal"
-#   } 
-# }
 
 ######################################################################################################
 # output
