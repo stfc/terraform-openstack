@@ -1,33 +1,20 @@
 # Kubernetes deployment with RKE
 
-### Add your ssh keys to a new machine
+Acknowledgements - This work is based on work developed by the ISIS Auto Reduction Team, whose work can be found here https://github.com/interactivereduction/k8s. 
 
-```shell
-chmod 0600 .ssh/id_rsa
-chmod 0600 .ssh/id_rsa.pub
-```
+### Prerequisites 
+Ensure you can connect into an existing machine following this documentation: https://stfc-cloud-docs.readthedocs.io/en/latest/faqs.htm#how-do-i-connect-to-my-vm-using-ssh 
 
 
 ### Git clone the repo 
 
 ```shell
-git clone git@github.com:stfc/terraform-openstack.git
-```
-
-### Install RKE
-
-Find the latest release and copy the link to the binary from here https://github.com/rancher/rke/releases
-
-```shell
-wget [BINARY_LINK]
-chmod +x rke_linux-amd64
-mv rke_linux-amd64 /usr/local/bin/rke # or any other $PATH 
-rke --version # Check that RKE is working
+git clone https://github.com/stfc/terraform-openstack.git
 ```
 
 ### Set up Access to the STFC cloud
  
-Copy your `PROJECT.rc` file onto the VM, then run `source [PROJECT.rc]` and enter your fedID password.
+Copy your `PROJECT.rc` file onto the VM, then run `source PROJECT.rc` and enter your fedID password.
 
 
 ### Install conda 
@@ -64,20 +51,13 @@ helm plugin install https://github.com/databus23/helm-diff  # recommended helm p
 ### You are ready to run Terraform!
 
 ```shell
+cd terraform/
 terraform init
 terraform plan # check that settings are correct 
-terraform apply
+terraform apply # may have to run this several times
 ``` 
 Last command struggles with creating all the openstack VMs, this happens when doing it manually and is not related to terraform, it is due to cloud instability.
 
-
-### Setup an ssh-agent
-This may be needed for connecting to the cluster with RKE.
-
-```shell
-eval "$(ssh-agent -s)"
-ssh-add ~/.ssh/id_rsa 
-```
 
 ### Create inventory
 Use terraform to output the ansible inventory into your ansible directory
@@ -89,14 +69,17 @@ terraform output -raw ansible_inventory > ../ansible/inventory.ini
 ### Install required ansible roles and kubectl
 
 ```shell
-ansible-galaxy install lablabs.rke2
+cd ../ansible/
+ansible-galaxy install -r requirements.yml
 sudo snap install kubectl --classic
 ```
+
 ### Set up nodes
+
 Use terraform to set up nodes for RKE deployment. You will need to run these repeatedly until they execute with no errors. 
 
 ```shell
-cd ../ansible; ansible-playbook setup-nodes.yml; cd ../terraform
+ansible-playbook setup-nodes.yml
 ```
 
 ### Acess your cluster
@@ -106,7 +89,7 @@ To acess your cluster with kubectl you will need to get `rke2.yaml` from control
 
 ```shell
 export KUBECONFIG=/etc/rancher/rke2/rke2.yaml
-kubectl --kubeconfig rke2.yaml get pods --all-namespaces
+kubectl get pods --all-namespaces
 ```
 
 
@@ -114,7 +97,7 @@ kubectl --kubeconfig rke2.yaml get pods --all-namespaces
 Run the playbook for deploying K8s tools such as Traefik, Cilium, Longhorn, Prometheus, Promtail etc.
 
 ```shell
-cd ../ansible; ansible-playbook deploy-k8s-services.yml; cd ../terraform
+ansible-playbook deploy-k8s-services.yml
 ```
 
 --------------------------------------------------
@@ -124,7 +107,7 @@ cd ../ansible; ansible-playbook deploy-k8s-services.yml; cd ../terraform
 ```shell
 source openstack.rc
 conda activate k8s
-export KUBECONFIG=path/to/kubeconfig
+export KUBECONFIG=/etc/rancher/rke2/rke2.yaml
 ```
 
 ## To upscale an existing RKE2 cluster 

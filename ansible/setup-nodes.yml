@@ -2,9 +2,6 @@
 - name: Deploy RKE2
   hosts: all
   become: yes
-  vars:
-    rke2_download_kubeconf: true
-    rke2_download_kubeconf_file_name: rke2.yaml
-    rke2_download_kubeconf_path: /tmp
+
   roles:
      - role: lablabs.rke2
