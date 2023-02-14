@@ -1,0 +1,10 @@
+---
+- name: Deploy cluster components post RKE-deployment
+  hosts: all
+  roles:
+    - role: cilium
+    - role: traefik
+    - role: longhorn
+    - role: prometheus
+    - role: promtail
+    - role: kafka

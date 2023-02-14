@@ -1,0 +1,13 @@
+[masters]
+%{ for hostname, ip in masters ~}
+${"master-0"}${hostname+1} ansible_host=${ip} ansible_user=${user} 
+%{ endfor ~}
+
+[workers]
+%{ for hostname, ip in workers ~}
+${"worker-0"}${hostname+1} ansible_host=${ip} ansible_user=${user}
+%{ endfor ~}
+
+[k8s_cluster:children]
+masters
+workers
