@@ -4,3 +4,6 @@ beth-scratch.rc
 .terraform/providers/
 terraform.tfstate
 terraform.tfstate.backup
+ansible/
+rke2.yaml
+terraform/
