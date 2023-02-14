@@ -71,27 +71,31 @@ terraform apply
 Last command struggles with creating all the openstack VMs, this happens when doing it manually and is not related to terraform, it is due to cloud instability.
 
 
-### Setup an ssh-agent for connecting to the cluster with RKE. (This may not be needed)
+### Setup an ssh-agent
+This may be needed for connecting to the cluster with RKE.
 
 ```shell
 eval "$(ssh-agent -s)"
 ssh-add ~/.ssh/id_rsa 
 ```
 
-### Use terraform to output the ansible inventory into your ansible directory
+### Create inventory
+Use terraform to output the ansible inventory into your ansible directory
 
 ```shell
 terraform output -raw ansible_inventory > ../ansible/inventory.ini
 ```
 
 
-### Use terraform to set up nodes for RKE deployment (It is recommended to run these repeatedly until they execute with no errors): 
+### Set up nodes
+Use terraform to set up nodes for RKE deployment. You will need to run these repeatedly until they execute with no errors. 
 
 ```shell
 cd ../ansible/playbooks; ansible-playbook setup-nodes.yml; cd ../terraform
 ```
 
-### To acess your cluster with kubectl you will need to get rke2.yaml from controlplane.Export KUBECONFIG as an environment variable so that ansible can pick it up.
+### Acess your cluster
+To acess your cluster with kubectl you will need to get `rke2.yaml` from controlplane. Export KUBECONFIG as an environment variable so that ansible can pick it up.
 
 ```shell
 export KUBECONFIG=/etc/rancher/rke2/rke2.yaml
@@ -99,7 +103,8 @@ kubectl --kubeconfig rke2.yaml get pods --all-namespaces
 ```
 
 
-### Run the playbook for deploying K8s tools such as Traefik, Cilium, Longhorn, Prometheus, Promtail etc.
+### Deploy other services
+Run the playbook for deploying K8s tools such as Traefik, Cilium, Longhorn, Prometheus, Promtail etc.
 
 ```shell
 cd ../ansible; ansible-playbook deploy-k8s-services.yml; cd ../terraform
