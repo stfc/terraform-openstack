@@ -1,6 +1,6 @@
 # Kubernetes deployment with RKE
 
-## 1. First, add your ssh keys to a new machine.
+### Add your ssh keys to a new machine
 
 ```shell
 chmod 0600 .ssh/id_rsa
@@ -8,10 +8,15 @@ chmod 0600 .ssh/id_rsa.pub
 ```
 
 
-## 2. Second, git clone the repo `git@github.com:stfc/terraform-openstack.git`
+### Git clone the repo 
 
-Requirements:
-- Install RKE (instructions below). Find the latest release and copy the link to the binary from here https://github.com/rancher/rke/releases
+```shell
+git clone git@github.com:stfc/terraform-openstack.git
+```
+
+### Install RKE
+
+Find the latest release and copy the link to the binary from here https://github.com/rancher/rke/releases
 
 ```shell
 wget [BINARY_LINK]
@@ -20,11 +25,14 @@ mv rke_linux-amd64 /usr/local/bin/rke # or any other $PATH)
 rke --version # Check that RKE is working
 ```
 
+### Set up Access to the STFC cloud
+ 
+Copy your `PROJECT.rc` file onto the VM, then run `source [PROJECT.rc]` and enter your fedID password.
 
-## 3. Access to the STFC cloud via an openstack account, with setup environment variables on the terminal of choice. Copy your `PROJECT.rc` file onto the VM, then run `source [PROJECT.rc]` and enter your fedID password.
 
+### Install conda 
 
-## 4. Install conda (recommend mambaforge) for managing the k8s repo or install python-kubernetes, ansible, and all of the kubernetes management software (kubernetes-client, kuberentes-server, etc) into your system/distro.
+Conda is needed for managing the k8s repo or install python-kubernetes, ansible, and all of the kubernetes management software (kubernetes-client, kuberentes-server, etc) into your system/distro.
 
 ```shell
 wget https://repo.anaconda.com/archive/Anaconda3-2022.10-Linux-x86_64.sh
@@ -32,10 +40,11 @@ bash Anaconda3-2022.10-Linux-x86_64.sh # need to answer yes
 source anaconda3/bin/activate
 conda init
 ```
-(may need to close the ssh session and log in again)
+
+May need to close the ssh session and log in again
 
 
-## 5. Conda env setup
+### Conda env setup
 
 To create a conda environment that can sustain development of this repository you can run the following command, whilst in the repository:
 
@@ -47,42 +56,42 @@ helm plugin install https://github.com/databus23/helm-diff  # recommended helm p
 ```
 
 
-## 6. Cloud setup and RKE deployment in terraform:
+### Cloud setup and RKE deployment in terraform:
 
 - Go to `terraform/variables.tf` file, modify variables to your liking i.e. image, flavours, number of VMs, your fedID.
 - Within `terraform/main.tf` file, you may need to set your  SSH Key name ONLY IF you don't have your ssh-keys in the cloud already.
 
 
-## 7. You are ready to run Terraform!
+### You are ready to run Terraform!
 
 ```shell
 terraform init
 terraform apply
 ``` 
-(Last command struggles with creating all the openstack VMs, this happens when doing it manually and is not related to terraform, it is due to cloud instability)
+Last command struggles with creating all the openstack VMs, this happens when doing it manually and is not related to terraform, it is due to cloud instability.
 
 
-## 8. Setup an ssh-agent for connecting to the cluster with RKE. (This may not be needed)
+### Setup an ssh-agent for connecting to the cluster with RKE. (This may not be needed)
 
 ```shell
 eval "$(ssh-agent -s)"
 ssh-add ~/.ssh/id_rsa 
 ```
 
-## 9. Use terraform to output the ansible inventory into your ansible directory
+### Use terraform to output the ansible inventory into your ansible directory
 
 ```shell
 terraform output -raw ansible_inventory > ../ansible/inventory.ini
 ```
 
 
-## 10. Use terraform to set up nodes for RKE deployment (It is recommended to run these repeatedly until they execute with no errors): 
+### Use terraform to set up nodes for RKE deployment (It is recommended to run these repeatedly until they execute with no errors): 
 
 ```shell
 cd ../ansible/playbooks; ansible-playbook setup-nodes.yml; cd ../terraform
 ```
 
-## 11. To acess your cluster with kubectl you will need to get rke2.yaml from controlplane.Export KUBECONFIG as an environment variable so that ansible can pick it up.
+### To acess your cluster with kubectl you will need to get rke2.yaml from controlplane.Export KUBECONFIG as an environment variable so that ansible can pick it up.
 
 ```shell
 export KUBECONFIG=/etc/rancher/rke2/rke2.yaml
@@ -90,11 +99,13 @@ kubectl --kubeconfig rke2.yaml get pods --all-namespaces
 ```
 
 
-## 12. Run the playbook for deploying K8s tools such as Traefik, Cilium, Longhorn, Prometheus, Promtail etc.
+### Run the playbook for deploying K8s tools such as Traefik, Cilium, Longhorn, Prometheus, Promtail etc.
 
 ```shell
 cd ../ansible; ansible-playbook deploy-k8s-services.yml; cd ../terraform
 ```
+
+--------------------------------------------------
 
 ## Things to run every time you re-open the session
 
@@ -103,7 +114,6 @@ source openstack.rc
 conda activate k8s
 export KUBECONFIG=path/to/kubeconfig
 ```
-
 
 ## To upscale an existing RKE2 cluster 
 
