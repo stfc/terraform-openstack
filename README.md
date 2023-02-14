@@ -1,90 +1,111 @@
-Kubernetes deployment
+# Kubernetes deployment with RKE
 
-1. First, add your ssh keys to a new machine. (0600 permissions)
+## 1. First, add your ssh keys to a new machine.
 
-`chmod 0600 id_rsa`
-`chmod 0600 id_rsa.pub`
+```shell
+chmod 0600 .ssh/id_rsa
+chmod 0600 .ssh/id_rsa.pub
+```
 
 
-2. Second, git clone the repo git@github.com:stfc/terraform-openstack.git
+## 2. Second, git clone the repo `git@github.com:stfc/terraform-openstack.git`
 
 Requirements:
 - Install RKE (instructions below). Find the latest release and copy the link to the binary from here https://github.com/rancher/rke/releases
 
-`wget [BINARY_LINK]`
-`chmod +x rke_linux-amd64`
-`mv rke_linux-amd64 /usr/local/bin/rke`  (or any other $PATH) 
-`rke --version` (Check that RKE is working)
+```shell
+wget [BINARY_LINK]
+chmod +x rke_linux-amd64
+mv rke_linux-amd64 /usr/local/bin/rke # or any other $PATH) 
+rke --version # Check that RKE is working
+```
 
 
-3. Access to the STFC cloud via an openstack account, with setup environment variables on the terminal of choice. Copy your `PROJECT.rc` file onto the VM, then run `source [PROJECT.rc]` and enter your fedID password.
+## 3. Access to the STFC cloud via an openstack account, with setup environment variables on the terminal of choice. Copy your `PROJECT.rc` file onto the VM, then run `source [PROJECT.rc]` and enter your fedID password.
 
 
-4. Install conda (recommend mambaforge) for managing the k8s repo or install python-kubernetes, ansible, and all of the kubernetes management software (kubernetes-client, kuberentes-server, etc) into your system/distro.
+## 4. Install conda (recommend mambaforge) for managing the k8s repo or install python-kubernetes, ansible, and all of the kubernetes management software (kubernetes-client, kuberentes-server, etc) into your system/distro.
 
-`wget https://repo.anaconda.com/archive/Anaconda3-2022.10-Linux-x86_64.sh`
-`bash Anaconda3-2022.10-Linux-x86_64.sh` (need to answer yes)
-`source anaconda3/bin/activate`
-`conda init`
+```shell
+wget https://repo.anaconda.com/archive/Anaconda3-2022.10-Linux-x86_64.sh
+bash Anaconda3-2022.10-Linux-x86_64.sh # need to answer yes
+source anaconda3/bin/activate
+conda init
+```
 (may need to close the ssh session and log in again)
 
 
-5. Conda env setup
+## 5. Conda env setup
 
 To create a conda environment that can sustain development of this repository you can run the following command, whilst in the repository:
-`cd k8s/`
-`conda env create -f k8s-conda-env.yml`
-`conda activate k8s`
-`helm plugin install https://github.com/databus23/helm-diff`  (recommended helm plugin)
+
+```shell
+cd k8s/
+conda env create -f k8s-conda-env.yml
+conda activate k8s
+helm plugin install https://github.com/databus23/helm-diff  # recommended helm plugin
+```
 
 
-6. Cloud setup and RKE deployment in terraform:
+## 6. Cloud setup and RKE deployment in terraform:
 
 - Go to `terraform/variables.tf` file, modify variables to your liking i.e. image, flavours, number of VMs, your fedID.
 - Within `terraform/main.tf` file, you may need to set your  SSH Key name ONLY IF you don't have your ssh-keys in the cloud already.
 
 
-7. You are ready to run Terraform!
+## 7. You are ready to run Terraform!
 
-`terraform init`
-`terraform apply` (This command struggles with creating all the openstack VMs, this happens when doing it manually and is not related to terraform, it is due to cloud instability)
-
-
-8. Setup an ssh-agent for connecting to the cluster with RKE. (This may not be needed)
-
-`eval "$(ssh-agent -s)"`  (sets up ssh agent)
-`ssh-add ~/.ssh/id_rsa`   (adds key to the agent)
+```shell
+terraform init
+terraform apply
+``` 
+(Last command struggles with creating all the openstack VMs, this happens when doing it manually and is not related to terraform, it is due to cloud instability)
 
 
-9. Use terraform to output the ansible inventory into your ansible directory
+## 8. Setup an ssh-agent for connecting to the cluster with RKE. (This may not be needed)
 
-`terraform output -raw ansible_inventory > ../ansible/inventory.ini` 
+```shell
+eval "$(ssh-agent -s)"
+ssh-add ~/.ssh/id_rsa 
+```
 
+## 9. Use terraform to output the ansible inventory into your ansible directory
 
-10. Use terraform to set up nodes for RKE deployment (It is recommended to run these repeatedly until they execute with no errors): 
-
-`cd ../ansible/playbooks; ansible-playbook setup-nodes.yml; cd ../terraform`
-
-11. To acess your cluster with kubectl you will need to get rke2.yaml from controlplane.Export KUBECONFIG as an environment variable so that ansible can pick it up.
-
-`export KUBECONFIG=/etc/rancher/rke2/rke2.yaml`
-`kubectl --kubeconfig rke2.yaml get pods --all-namespaces` 
-
-
-12. Run the playbook for deploying K8s tools such as Traefik, Cilium, Longhorn, Prometheus, Promtail etc.
-
-`cd ../ansible; ansible-playbook deploy-k8s-services.yml; cd ../terraform`
+```shell
+terraform output -raw ansible_inventory > ../ansible/inventory.ini
+```
 
 
+## 10. Use terraform to set up nodes for RKE deployment (It is recommended to run these repeatedly until they execute with no errors): 
 
-! Things to run every time you re-open the session
+```shell
+cd ../ansible/playbooks; ansible-playbook setup-nodes.yml; cd ../terraform
+```
 
-`source openstack.rc`
-`conda activate k8s`
-`export KUBECONFIG=path/to/kubeconfig`
+## 11. To acess your cluster with kubectl you will need to get rke2.yaml from controlplane.Export KUBECONFIG as an environment variable so that ansible can pick it up.
+
+```shell
+export KUBECONFIG=/etc/rancher/rke2/rke2.yaml
+kubectl --kubeconfig rke2.yaml get pods --all-namespaces
+```
 
 
-! To upscale an existing RKE2 cluster 
+## 12. Run the playbook for deploying K8s tools such as Traefik, Cilium, Longhorn, Prometheus, Promtail etc.
+
+```shell
+cd ../ansible; ansible-playbook deploy-k8s-services.yml; cd ../terraform
+```
+
+## Things to run every time you re-open the session
+
+```shell
+source openstack.rc
+conda activate k8s
+export KUBECONFIG=path/to/kubeconfig
+```
+
+
+## To upscale an existing RKE2 cluster 
 
 - Need to update number of workers/control nodes within `variables.tf`
 
@@ -94,7 +115,7 @@ To create a conda environment that can sustain development of this repository yo
 
 - `cd ../ansible`
 
-- Run `ansible-playbook setup-nodes.yml -vvv` # optional -vvv flag (good for debugging)
+- Run `ansible-playbook setup-nodes.yml -vvv` # optional -vvv flag, good for debugging
 
 - NO NEED to rerun deploy-k8s-services.yml
 
