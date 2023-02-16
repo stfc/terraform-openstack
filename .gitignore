@@ -9,3 +9,4 @@ kubeconfig
 inventory.ini
 haproxy.cfg
 rke2.yaml
+clouds.yaml
