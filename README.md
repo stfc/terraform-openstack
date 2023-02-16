@@ -16,7 +16,7 @@ git clone https://github.com/stfc/terraform-openstack.git
 
 ### Set up Access to the STFC cloud
  
-Copy your `PROJECT.rc` file onto the VM, then run `source PROJECT.rc` and enter your fedID password.
+Copy your `clouds.yaml` file into the VM's `.config/openstack/`. You will need to hard-code your password under `username:`. Some additional documentation can be found here: https://stfc-cloud-docs.readthedocs.io/en/latest/Reference/PythonSDK.html#clouds-yaml 
 
 
 ### Install conda 
@@ -109,7 +109,6 @@ ansible-playbook deploy-k8s-services.yml
 ## Things to run every time you re-open the session
 
 ```shell
-source openstack.rc
 conda activate k8s
 export KUBECONFIG=/etc/rancher/rke2/rke2.yaml
 ```
