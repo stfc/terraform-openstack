@@ -11,3 +11,4 @@ dependencies:
   - kubernetes-helm
   - terraform
   - openstacksdk==0.61.0 # Requirement for using ansible to deploy openstack compute instances
+  - python3-openstackclient
