@@ -16,7 +16,7 @@ git clone https://github.com/stfc/terraform-openstack.git
 
 ### Set up Access to the STFC cloud
  
-Copy your `PROJECT.rc` file onto the VM, then run `source PROJECT.rc` and enter your fedID password.
+Copy your `clouds.yaml` file into the VM's `.config/openstack/`. We recommend creating an application credetial instead of hard-coding your password. This decouples production clusters from an individual user's account. Some additional documentation can be found here: https://stfc-cloud-docs.readthedocs.io/en/latest/Keystone/ApplicationCredentials.html and here https://stfc-cloud-docs.readthedocs.io/en/latest/Reference/PythonSDK.html#clouds-yaml 
 
 
 ### Install conda 
@@ -87,11 +87,10 @@ ansible-playbook setup-nodes.yml
 ```
 
 ### Acess your cluster
-To acess your cluster with kubectl you will need to get `rke2.yaml` from controlplane. Export KUBECONFIG as an environment variable so that ansible can pick it up.
-
-** NB! Prior to running `kubectl`, you may need to modify the `server:` line to include one of master's IP address instead of `https://127.0.0.1:6443` **
+To acess your cluster you will need to export KUBECONFIG as an environment variable so that ansible can pick it up.
 
 ```shell
+sudo cp /tmp/rke2.yaml /etc/rancher/rke2/rke2.yaml
 export KUBECONFIG=/etc/rancher/rke2/rke2.yaml
 kubectl get pods --all-namespaces
 ```
@@ -109,7 +108,6 @@ ansible-playbook deploy-k8s-services.yml
 ## Things to run every time you re-open the session
 
 ```shell
-source openstack.rc
 conda activate k8s
 export KUBECONFIG=/etc/rancher/rke2/rke2.yaml
 ```
@@ -126,8 +124,8 @@ export KUBECONFIG=/etc/rancher/rke2/rke2.yaml
 
 - `cd ../ansible`
 
-- Run `ansible-playbook setup-nodes.yml -vvv` # optional -vvv flag, good for debugging
+- Run `ansible-playbook setup-nodes.yml`
 
-- There is no need to re-run `deploy-k8s-services.yml`
+- (There is no need to re-run `deploy-k8s-services.yml`)
 
-- To check that new hosts/nodes are included in the cluster run `kubectl --kubeconfig rke2.yaml get pods --all-namespaces`
+- To check that new hosts/nodes are included in the cluster run `kubectl get pods --all-namespaces`

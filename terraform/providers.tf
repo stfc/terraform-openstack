@@ -10,5 +10,6 @@ required_version = ">= 0.14.0"
 }
 
 provider "openstack" {
+  cloud = "openstack"
   use_octavia = true
 }
