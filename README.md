@@ -90,7 +90,7 @@ ansible-playbook setup-nodes.yml
 To acess your cluster you will need to export KUBECONFIG as an environment variable so that ansible can pick it up.
 
 ```shell
-sudo cp /tmp/rke2.yaml /etc/rancher/rke2/rke2.yaml
+sudo mkdir -p /etc/rancher/rke2 && sudo cp /tmp/rke2.yaml /etc/rancher/rke2/rke2.yaml
 export KUBECONFIG=/etc/rancher/rke2/rke2.yaml
 kubectl get pods --all-namespaces
 ```
